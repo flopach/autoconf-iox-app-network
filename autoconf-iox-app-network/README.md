@@ -1,6 +1,6 @@
 # Autoconfigure IOx App Network Settings
 
-This simple tool gets your IOx app configuration automatically on your IOS XE device. You don't need to configure anything in the CLI!
+This simple tool gets your IOx app networking configuration automatically on your IOS XE device. You don't need to configure anything in the CLI!
 
 1. Enable NETCONF via webUI on the device (Administration > Management > HTTP/HTTPS/Netconf)
 2. Install your IOx application via webUI
