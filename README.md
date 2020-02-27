@@ -3,9 +3,10 @@
 This simple tool gets your IOx app networking configuration automatically on your IOS XE device. You don't need to configure anything in the CLI!
 
 1. Enable NETCONF via webUI on the device (Administration > Management > HTTP/HTTPS/Netconf)
-2. Install your IOx application via webUI
+2. Deploy your IOx application via webUI
 3. Put all information in data.json
-4. Run main.py script - done!
+4. Run main.py script
+5. Done! - Activate your app
 
 > Standalone executables for Windows & macOS are in the making!
 
