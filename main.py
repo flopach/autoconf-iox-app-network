@@ -3,7 +3,7 @@
 # Autoconfigure network settings for your IOx app deployed on IR1101
 # Flo Pachinger / flopach, Cisco Systems, Feb 2020
 # Apache License 2.0
-from ncclient import manager
+from ncclient import manager, xml_
 from collections import OrderedDict
 import xmltodict
 import xml.dom.minidom
@@ -57,6 +57,16 @@ def change_config(var):
 			</apps>
 		</app-hosting-cfg-data>
 		<native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+		    <ip>
+			    <nat xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-nat">
+					<inside>
+						<source>
+							<static>
+							</static>
+						</source>
+					</inside>
+				</nat>
+			</ip>
 		    <interface>
 		        <VirtualPortGroup>
 					<name>0</name>
@@ -105,16 +115,6 @@ def change_config(var):
 					</ip>
 				</GigabitEthernet>
 			</interface>
-			<ip>
-			    <nat xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-nat">
-					<inside>
-						<source>
-							<static>
-							</static>
-						</source>
-					</inside>
-				</nat>
-			</ip>
 		</native>
 		</config>'''
     config_change_str = Template(config_change_str).substitute(IOX_appid = config["IOX"]["appid"],
@@ -145,7 +145,7 @@ def change_config(var):
     #protocol : local-port : global-port
     for portmapping in config["IOX"]["port-mapping"]:
         portmappings = portmapping.split(":")
-        portmapping_od_item = OrderedDict([ ("proto",portmappings[0]),("local-ip",config["IOX"]["ip-iox-app"]),("local-port",portmappings[1]),("interface",interface),("global-port",portmappings[2]) ])
+        portmapping_od_item = OrderedDict([("proto",portmappings[0]),("local-ip",config["IOX"]["ip-iox-app"]),("local-port",portmappings[1]),("interface",interface),("global-port",portmappings[2])])
         portmapping_od["nat-static-proto-transport-interface-list"].append(portmapping_od_item)
     config_change["config"]["native"]["ip"]["nat"]["inside"]["source"]["static"] = portmapping_od
 
@@ -154,6 +154,11 @@ def change_config(var):
     #command for troubleshooting - gets you the config which will be sent
     #print(xml.dom.minidom.parseString(config_change_str).toprettyxml())
     netconf_reply = m.edit_config(target='running', config=config_change_str)
+    print("Did it work? {}".format(netconf_reply.ok))
+
+def save_running_config():
+    rpc_body = '''<cisco-ia:save-config xmlns:cisco-ia="http://cisco.com/yang/cisco-ia"/>'''
+    netconf_reply = m.dispatch(xml_.to_ele(rpc_body))
     print("Did it work? {}".format(netconf_reply.ok))
 
 if __name__ == "__main__":
@@ -170,14 +175,19 @@ Please insert your configuration into data.json:
 - Outside-Interface: The IP address of the device in the outside network (probably same IP address as under IOS XE).
     Please select now which interface you want to use:
     1: GigabitEthernet0/0/0
-    2: VLAN as set in data.json\n""")
-    var = int(input("Write 1 or 2: "))
+    2: VLAN as set in data.json
+    
+    OR: 3: Show running configuration\n""")
+    var = int(input("Select: "))
     print("Starting...")
     parse_json()
     connecting()
-    if var == 3:
-        get_running_config()
-    else:
+    if var == 1 or var == 2:
         print("Changing configuration...")
         change_config(var)
-    print("...Done.")
+        print("Saving configuration...")
+        save_running_config()
+    elif var == 3:
+        get_running_config()
+    else:
+        print("Wrong input - please write only one number according to its action.")
