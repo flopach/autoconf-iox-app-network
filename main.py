@@ -40,7 +40,7 @@ def get_running_config():
 def change_config(var):
     #Configuration to change in XML, insert variables from data.json
     config_change_str = '''
-        <config>
+        <config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
         <app-hosting-cfg-data xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-app-hosting-cfg">
 			<apps>
 				<app>
