@@ -14,18 +14,12 @@ This simple tool gets your IOx app networking configuration automatically on you
 
 1. Clone the repository or download main.py and data.json
 
-2. Install the required python libraries (depending on your python version):
-
-```
-pip install -r requirements.txt
-pip3 install -r requirements.txt
-```
+2. Install the required python libraries
 
 3. Run the script. The instructions on how to edit the data.json is given in the CLI:
 
 ```
 python main.py
-python3 main.py
 ```
 
 ### Prerequisites
